@@ -1,6 +1,6 @@
 ---
-title: angular-json-web-token
-date: 2017-01-20 14:41:39
+title: angular使用Json Web Token进行用户验证
+date: 2017-01-21 14:41:39
 ---
 无状态认证很适合angular应用。Ryan Chenkie在博客中谈到利用JOSN Web Tokens实现这一点。——Victor Savkin
 
@@ -19,7 +19,7 @@ JWT是什么样子的？下面就是个例子：
 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ
 ```
 
-JWTs包含三部分，每一个都附加```.```分隔符。这三部分是：
+JWTs包含三部分，每一个都附加`.`分隔符。这三部分是：
 
 ### Header
 我们注册token算法和类型的地方
