@@ -5,6 +5,7 @@ date: 2017-01-11 14:41:39
 
 书接上文，[karma+webpack搭建vue单元测试环境](http://www.jianshu.com/p/a515fbbdd1b2)介绍了vue单元测试环境搭建及查看源文件的测试覆盖覆盖率。今天来说一下vue单元测试思路和case的写法。测试框架使用jasmine，[语法参考](https://jasmine.github.io/2.0/introduction.html)。
 
+<!-- more -->
 
 > 代码地址：[https://github.com/MarxJiao/vue-karma-test/tree/spec-demo](https://github.com/MarxJiao/vue-karma-test/tree/spec-demo)
 
