@@ -138,16 +138,18 @@ export class LoginComponent {
 ```
 当认证成功后，用户的JWT就会被保存在local storage里。
 
-能看到我们在表单上设置了*ngIf条件，来监控认证服务里的```loggedIn```方法。让我们继续开看。
+能看到我们在表单上设置了*ngIf条件，来监控认证服务里的`loggedIn`方法。让我们继续开看。
 
 ### 检查没过期的Token
 
 在无状态的用户验证中，前端唯一关心的是用户的JWT有没有过期。毫无疑问前端要检查JWT有没有过期，并且是否可用。然而，做这种检查，前端需要知道注册JWT的密钥，然而我们并不想把密钥暴露出来。检查token是否可用是非常有用的，如果token无效了，那么将不能访问到受保护的api资源。
 
-我们能从[angular2-jwt](https://github.com/auth0/angular2-jwt)的```tokenNotExpired```方法中获取一些帮助，来验证这个。
+我们能从[angular2-jwt](https://github.com/auth0/angular2-jwt)的`tokenNotExpired`方法中获取一些帮助，来验证这个。
+
 ```shell
 npm install angular2-jwt
 ```
+
 ```typescript
 // auth.service.ts
 
@@ -161,13 +163,13 @@ loggedIn() {
 
 ...
 ```
-这个函数简单地检查了JWT是否过期，如果没过期的话就返回```true```。
+这个函数简单地检查了JWT是否过期，如果没过期的话就返回`true`。
 
 ### 限制认证用户的路由
 
 我们已经知道了一些方法来为没有jwt或者jwt过期的用户隐藏一些链接低着和导航元素。
-然而用户依然能够通过手动输入uri的方式进入那些链接，所以我们需要一些方法来限制用户路由。为了做到这点，我们需要设置一个```AuthGuard```服务来检查用户是否有权限进入某个路由。
-我们需要通过在设置路由的时候的```CanActivate```方法，来验证用户权限。
+然而用户依然能够通过手动输入uri的方式进入那些链接，所以我们需要一些方法来限制用户路由。为了做到这点，我们需要设置一个`AuthGuard`服务来检查用户是否有权限进入某个路由。
+我们需要通过在设置路由的时候的`CanActivate`方法，来验证用户权限。
 
 ```typescript
 // auth-guard.service.ts
@@ -193,9 +195,9 @@ export class AuthGuard implements CanActivate {
 }
 ```
 
-当路由改变的时候，```AuthGuard```会调用```AuthService```去检查当前的JWT是否存在和是否有效，如果存在并且有效，才能进入路由。如果无效，就会跳转到'unauthorized'页面。
+当路由改变的时候，`AuthGuard`会调用`AuthService`去检查当前的JWT是否存在和是否有效，如果存在并且有效，才能进入路由。如果无效，就会跳转到'unauthorized'页面。
 
-```AuthGuard```需要在确认路由是否为私有路由时调用，并且在旅游的配置中配置好。
+`AuthGuard`需要在确认路由是否为私有路由时调用，并且在旅游的配置中配置好。
 
 ```typescript
 ...
@@ -211,7 +213,7 @@ export const routes: RouterConfig = [
 ```
 
 ### 发送认证请求
-在应用中使用用户认证的最后一个大的步骤就是把用户的JWT作为认证信息通过http请求头发送出去。Angular 2不像Angular 1.x那样拦截http请求，所以我们只需要在每个请求的option里发送请求头，或者自动发送http请求。Angular2-jwt提供了```AuthHttp```方法来做后面的事情。
+在应用中使用用户认证的最后一个大的步骤就是把用户的JWT作为认证信息通过http请求头发送出去。Angular 2不像Angular 1.x那样拦截http请求，所以我们只需要在每个请求的option里发送请求头，或者自动发送http请求。Angular2-jwt提供了`AuthHttp`方法来做后面的事情。
 
 ```typescript
 // secure-stuff.component.ts

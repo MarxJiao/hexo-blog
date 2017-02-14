@@ -100,7 +100,7 @@ iscroll提供了refresh方法来处理dom改变时刷新iscroll的状态。Vue�
 
 于是乎有了另外的设计思路：在binding钩子中新建iscroll实例，并添加到vnode里，在update时，将oldVnode里面的iscroll属性赋值给新的vnode，这样实现了一个iscroll实例的跨钩子数据传递，在update钩子中使用iscroll的refresh方法进行刷新，这样就保证了一次指令调用只使用一个iscroll实例，解决了多次触发事件的问题。最后在指令销毁时销毁iscroll实例。
 
-```javacript
+```javascript
 import IScroll from 'iscroll'
 
 const VIScroll = {

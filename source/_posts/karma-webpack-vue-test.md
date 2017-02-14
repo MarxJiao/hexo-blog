@@ -166,7 +166,7 @@ Bingo! sourcemap。
 
 ## 相关链接
 
-[Vue单元测试case写法](http://www.jianshu.com/p/45e8c2b26309)
+[Vue单元测试case写法](http://marxjiao.com/2017/01/11/write-vue-unit-test-case/)
 
 [Karma官网](http://karma-runner.github.io/1.0/index.html)
 

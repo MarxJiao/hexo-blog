@@ -3,7 +3,7 @@ title: Vue单元测试case写法
 date: 2017-01-11 14:41:39
 ---
 
-书接上文，[karma+webpack搭建vue单元测试环境](http://www.jianshu.com/p/a515fbbdd1b2)介绍了vue单元测试环境搭建及查看源文件的测试覆盖覆盖率。今天来说一下vue单元测试思路和case的写法。测试框架使用jasmine，[语法参考](https://jasmine.github.io/2.0/introduction.html)。
+书接上文，[karma+webpack搭建vue单元测试环境](http://marxjiao.com/2017/01/08/karma-webpack-vue-test/)介绍了vue单元测试环境搭建及查看源文件的测试覆盖覆盖率。今天来说一下vue单元测试思路和case的写法。测试框架使用jasmine，[语法参考](https://jasmine.github.io/2.0/introduction.html)。
 
 <!-- more -->
 
@@ -22,7 +22,8 @@ date: 2017-01-11 14:41:39
 # 组件加载后的状态
 要测试组件加载后的状态，首先我们需要将vue组件生成实例。并检测挂载后实例的数据状态。下面是个示例：
 
-我们来看下```src/app.vue```组件的代码：
+我们来看下`src/app.vue`组件的代码：
+
 ```html
 <template>
     <div>
@@ -54,6 +55,7 @@ date: 2017-01-11 14:41:39
     }
 </script>
 ```
+
 组件加载后title的值应该变成'Hello world'，所以我们这样来写测试代码
 
 ```javascript
@@ -78,11 +80,11 @@ describe('test app.vue', () => {
 });
 ```
 
-执行```karma start```我们能看到测试通过。
+执行`karma start`我们能看到测试通过。
 
 # 测试组件里面的方法
 
-我们知道vue将data和methods都挂在了vue实例的根节点下，所以测试vue组件中的方法也和上面测试状态一样，直接调用vm的方法就行了。我们来测试以下```setMessage```方法：
+我们知道vue将data和methods都挂在了vue实例的根节点下，所以测试vue组件中的方法也和上面测试状态一样，直接调用vm的方法就行了。我们来测试以下`setMessage`方法：
 
 ```javascript
 // 引用vue
@@ -108,7 +110,8 @@ describe('test app.vue', () => {
     });
 });
 ```
-执行```karma start```，就会看到测试成功。如果刚才没有关闭karma的话，在watch模式下，测试会自动进行。
+
+执行`karma start`，就会看到测试成功。如果刚才没有关闭karma的话，在watch模式下，测试会自动进行。
 
 怎么样？有没有感觉vue单元测试非常简单，赶紧做起来吧。
 
@@ -117,17 +120,16 @@ filter的测试就更简单了。filter就是纯函数，有固定的输入输�
 
 ```html
 <template>
-...
+
 
     <h1>{{title | upperCase}}</h1>
 
-...
 
 </template>
 
 <script>
 
-...
+// ...
 
     filters: {
         upperCase(str) {
@@ -135,7 +137,7 @@ filter的测试就更简单了。filter就是纯函数，有固定的输入输�
         }
     }
 
-...
+// ...
 </script>
 ```
 
@@ -158,11 +160,13 @@ describe('test app.vue', () => {
     });
 })
 ```
+
 # props测试
 
 props依赖父组件，这个怎么测试呢。我们来看下[vue官方提供的方法](https://vuejs.org/v2/guide/unit-testing.html#Writing-Testable-Components)
 使用Vue.extend()将组件挂载Vue构造器上，用propsData加入props数据，之后new一个Vue实例，这样就生成了一个独立的带props的vm和前面的实例一样，可以进行各种测试。
 我们的child组件：
+
 ```html
 <template>
     <div>
@@ -176,6 +180,7 @@ props依赖父组件，这个怎么测试呢。我们来看下[vue官方提供�
     }
 </script>
 ```
+
 测试child组件
 
 ```javascript
@@ -217,7 +222,7 @@ describe('test child.vue', () => {
 
 # 异步更新DOM的情况
 异步更新DOM的情况，参考[vue官网的示例](https://vuejs.org/v2/guide/unit-testing.html#Asserting-Asynchronous-Updates)
-使用```Vue.nextTick```来查看异步数据更新后dom是否变化
+使用`Vue.nextTick`来查看异步数据更新后dom是否变化
 
 ```javascript
 // 引用vue
