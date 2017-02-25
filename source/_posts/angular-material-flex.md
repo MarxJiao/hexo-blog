@@ -1,5 +1,5 @@
 ---
-title: angular-material-flex
+title: 使用angular + material 2 + flex-layout 开发项目
 date: 2017-02-26 00:00:02
 tags: [angular, material, flex-layout]
 ---
