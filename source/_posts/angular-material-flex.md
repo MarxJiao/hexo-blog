@@ -8,7 +8,7 @@ tags: [angular, material, flex-layout]
 
 <!-- more -->
 
-> TL;DR: 这篇文章主要的主要内容：1. angular配合material的使用配置；2. 使用npm本地安装material-design-icons字体来解决国内用户对google字体服务器访问问题；3. 使用flex-layout弥补material grid的大小屏幕适配问题；4使用scss作为angular-cli的默认css预处理方案。
+> TL;DR: 使用angular-cli搭建开发环境，并配置scss处理样式。material官方教程中的图标字体使用的是google的字体服务器，国内访问不是很稳定，这里使用npm本地安装material-design-icons字体来解决该问题。使用flex-layout来做响应式布局，这个布局库要比material中的grid强大的多。 
 
 下面我们开始进行。
 # 1. 工具安装
@@ -117,3 +117,7 @@ npm install --save material-design-icons
 ```
 
 至此整个环境搭建就完成了，可以按照[angular-cli文档](https://github.com/angular/angular-cli)、[material文档](https://material.angular.io/components)，[flex-layout文档](https://github.com/angular/flex-layout)进行开发了。
+
+- 页面示例：[http://marxjiao.com/angular-material-flex/](http://marxjiao.com/angular-material-flex/)
+
+- 代码地址：[https://github.com/MarxJiao/angular-material-flex](https://github.com/MarxJiao/angular-material-flex)
