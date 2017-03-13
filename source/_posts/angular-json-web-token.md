@@ -1,7 +1,11 @@
 ---
-title: angular使用Json Web Token进行用户验证
+title: 【翻译】angular使用Json Web Token进行用户验证
 date: 2017-01-21 14:41:39
 ---
+
+原文地址：http://angularjs.blogspot.ca/2016/11/easy-angular-authentication-with-json.html?view=classic
+
+
 无状态认证很适合angular应用。Ryan Chenkie在博客中谈到利用JOSN Web Tokens实现这一点。——Victor Savkin
 
 >TL;DR：像Angular开发的单页应用，在认证的时候遇到了一些挑战。大体来讲，传统的以session为基础的认证不适合利用接口传输数据的的单页应用，因为它需要服务端存在状态。在Angular应用（和一般的单页应用）中，使用JSON Web Tokens（简称JWTs）是一种很好的认证方式。继续阅读了解JWTs，或者查看Angular 2 Tour Secret Heroes，了解一个完整的Angular 2应用用户认证。
