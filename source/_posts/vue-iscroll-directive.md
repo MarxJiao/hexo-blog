@@ -94,7 +94,7 @@ export default VIScroll;
 
 这样做的结果是滑动效果没问题，数据更新后iscroll能够识别新的dom结构，但在点击按钮发送请求的时候，新建了多少个iscroll实例，就请求多少次，出现了重复请求的问题。
 
-Vue官方推荐使用dataset来在钩子间共享数据，既然是封装，显然dataset是不好维护的。我们需要解决的问题是跨钩子的数据共享和指令在多个地方使用时的数据隔离。
+Vue官方推荐使用dataset来在钩子间共享数据，dataset只能传递字符串。我们需要解决的问题是跨钩子的iscroll实例共享和指令在多个地方使用时的数据隔离。
 
 iscroll提供了refresh方法来处理dom改变时刷新iscroll的状态。Vue指令钩子中还有vnode和oldVnode参数，虽然官方不推荐修改它们，但在它们里面添加属性是可行的。
 
