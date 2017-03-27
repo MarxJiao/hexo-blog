@@ -2,8 +2,8 @@ language: node_js
 node_js:
   - "6"
 before_script:
-  - git config user.name "MarxJiao" 
-  - git config user.email "marxjiao@gmail.com"
+  - git config –global user.name "MarxJiao" 
+  - git config –global user.email "marxjiao@gmail.com"
   - npm install hexo-cli -g
 script:
   - hexo generate -d
