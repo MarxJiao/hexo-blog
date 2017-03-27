@@ -6,4 +6,13 @@ before_script:
   - git config user.name
   - 
 script:
-  - hexo generate -d
+  - hexo generate
+
+deploy:
+  provider: pages
+  local_dir: public
+  repo: https://github.com/MarxJiao/marxjiao.github.io.git
+  skip_cleanup: true
+  github_token: $GIT
+  on:
+    branch: master
