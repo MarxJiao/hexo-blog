@@ -3,5 +3,7 @@ node_js:
   - "6"
 before_script:
   - npm install hexo-cli -g
+  - git config user.name
+  - 
 script:
   - hexo generate -d
