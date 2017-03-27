@@ -10,7 +10,7 @@ script:
 deploy:
   provider: pages
   local_dir: public
-  repo: MarxJiao/marxjiao.github.io.git
+  repo: MarxJiao/marxjiao.github.io
   skip_cleanup: true
   github_token: $GIT
   on:
