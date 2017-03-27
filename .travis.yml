@@ -5,8 +5,3 @@ before_script:
   - npm install hexo-cli -g
 script:
   - hexo generate -d
-
-env:
-  global:
-    - GH_REF: github.com/MarxJiao/marxjiao.github.io.git
-    - secure: KkSEzSWph7AiiiBFrY96THioG03hKBF/RI2uCM6DUpwhTqLHSdNx8GtTRIlSXwhK3HlIQS4ZLcvIJV96PSp8B6fw8UQlDAeVnRPRhnAtKou1YnOO7sBrOC9gQWuXAsQ03VTpZK52/NRx9mHSQazOYMkgpcH438QF1xYdkhHRuJlr8kR5J9p2tpoqonEuXt1dt+jF8ksflJ883hN7A/YqNlbPoPV5ZPmaVk3Aay4q9Hrhj82/LHU03nzArvuvpGyjO7cIekZu3w3lt9hVMx2WjlGoqVapn1zlj11+E4UKvUjVhPwHZwhD3taSMtPY+18Kad0jfC7aZz0jqqv8jZryM5n0GO+AWn3Xx0lLsJcjei1RpxI9rYY/Vajkiu4jVDcC7agZnco1LTo0WhNGScDKwvKTRYyNaJVwe1t/EkBFArZwGZ+fqPiaOstkPy02wwAWgxPEKdcx4NW0PfAG4/KHevYfyp7HhhOW4bI9WH0kIIjSZCw7WaTgA10GOkms1cOaZ6Kzaqkp4VARja/pyZs/va9IPVrCzl/eM1qUSTQk+do3PjRQgiZzi4FouIdYkwdSet3oHV4987j1l9zFT4YGa7VOvESQmTqz9i262Z+AZeZKzVf6fIsw8eQ1O9xisAcutj7o+U9rJThsgBAAJQzMIe/I0IW3EflOjZyjCNffR70=
