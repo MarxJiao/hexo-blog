@@ -1,0 +1,12 @@
+language: node_js
+node_js:
+  - "6"
+before_script:
+  - npm install hexo-cli -g
+script:
+  - hexo generate -d
+
+env:
+  global:
+    - GH_REF: github.com/MarxJiao/hexo-blog.git
+    - secure: "Nl/wU4aDO+xegRN2ivShjqBpY9OK6VcWnAyQ4wZSMcBY+gAoK+4BiJ99XXbLy9e+5+ur3zW2XTK9qQTdEP9Spd8TVYcmT5812kdI89lgS1jahLZc4vtAGppalLOe003zlWY1bCV1FEapzru7w/puJ1DJvPbe5m+/X+tmxckliLf701i1Q0pEx48iSar9rJN8zHT70KaOexhKqNDyevyTNJ/nZqTYkSrVq5SWQidFgosXxKKdQALWUcGOD3xE6fyQ7KtJ3zCnBbpuRCw7kTvtEr3HFmmMNfa2zgWfsSshu0T10Neh1PAgUsjYos9Eh83rALniDivy5X9dkvUu+HjRPhH3OAog1U4thmhpbOswov8lDKSqKp3JVGEm0pejvgKOvRNc4cXavi4mlGT8y3eJwLzSptxE4DdFp01Kkp0eXj0BuMvmyiVs1Nklj7OW458NHx5Lt0R4DeNnBONYRcWohhT1mb8uasoVnJGvCDVYabSoYa3XkS9hPlnnrhQhEtaAkVlBlwbutPgyMHQM7EUJ2KhKFF6rrs+UWEr4vOCk3/sDc2MHkR9K1ksOyAS1LPwRTmISjalX1PJvJGrzZbCXsmEXH8+TZAOtMfQx2pev5YsU8onzzn5fSbl/yfoTGZJjFwMPfAJc9CRI3ka5AIGGqwwALjETyzeHh8xMyhL+z+U="
