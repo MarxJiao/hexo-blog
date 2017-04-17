@@ -10,6 +10,8 @@ tags: hexo
 3. 使用travis-ci实现自动发布
 4. 使用disqus添加留言功能
 
+<!-- more -->
+
 # 新建github repo
 在github新建repository，repository名称规则是：`用户名 + .github.io`。我的用户名是MarxJiao，这里新建名为marxjiao.github.io的repository。
 
