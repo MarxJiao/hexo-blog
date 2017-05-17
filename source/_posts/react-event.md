@@ -4,6 +4,9 @@ date: 2017-05-11 17:01:43
 tags: ['react']
 ---
 在react中绑定事件和在html中类似，使用驼峰命名方式来绑定事件。事件接收的值不再是字符串而是一个函数。事件触发时执行这个函数。
+
+<!-- more -->
+
 ```jsx
 class MyComponent extends React.Component {
 
