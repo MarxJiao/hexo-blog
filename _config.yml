@@ -75,3 +75,5 @@ deploy:
   name: MarxJiao
   email: marxjiao@gmail.com
   extend_dirs: 
+
+disqus_shortname: marxjiao
