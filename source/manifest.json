@@ -1,0 +1,24 @@
+{
+  "name": "Marx Blog",
+  "short_name": "Marx",
+  "icons": [{
+        "src": "css/images/banner.jpg",
+        "type": "image/png",
+        "sizes": "128x128"
+      }, {
+        "src": "css/images/banner.jpg",
+        "type": "image/png",
+        "sizes": "152x152"
+      }, {
+        "src": "css/images/banner.jpg",
+        "type": "image/png",
+        "sizes": "144x144"
+      }, {
+        "src": "css/images/banner.jpg",
+        "type": "image/png",
+        "sizes": "192x192"
+      }],
+  "start_url": "/?homescreen=1",
+  "display": "standalone",
+  "background_color": "#2196F3"
+}
