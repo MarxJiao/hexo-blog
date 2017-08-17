@@ -235,3 +235,264 @@ function getBlockStyle(block) {
 我们可以使用`editorState.getCurrentContent()`获取`contentState`对象，`contentState.getBlockForKey(blockKey)`可以获取到`blockKey`对应的`contentBlock`。`contentBlock.getType()`可以获取到当前contentBlock对应的类型。
 
 # Decorator
+
+除了使用自定义样式外，我们也可以使用自定义组件来渲染特定的内容。为了支持自定义富文本的灵活性，Draft.js提供了一个`decrator`系统。Decorator基于扫描给定`ContentBlock`的内容，找到满足与定义的策略匹配的文本范围，然后使用指定的React组件呈现它们。
+
+可以使用`CompositeDecorator`类定义所需的装饰器行为。 此类允许你提供多个`DraftDecorator`对象，并依次搜索每个策略的文本块。
+
+Decrator 保存在`EditorState`记录中。当新建一个`EditorState`对象时，例如使用`EditorState.createEmpty()`，可以提供一个decorator。
+
+新建一个Decorator类似这个样子：
+```javascript
+const HandleSpan = (props) => {
+    return (
+        <span
+            style={styles.handle}
+            data-offset-key={props.offsetKey}
+            >
+            {props.children}
+        </span>
+    );
+};
+const HashtagSpan = (props) => {
+    return (
+        <span
+            style={styles.hashtag}
+            data-offset-key={props.offsetKey}
+            >
+            {props.children}
+        </span>
+    );
+};
+const compositeDecorator = new CompositeDecorator([
+    {
+        strategy: function (contentBlock, callback, contentState) {
+            // 这里可以根据contentBlock和contentState做一些判断，根据判断给出要使用对应组件渲染的位置执行callback
+            // callback函数接收2个参数，start组件包裹的起始位置，end组件的结束位置
+            // callback(start, end);
+        },
+        component: HandleSpan
+    },
+    {
+        strategy: function (contentBlock, callback, contentState) {},
+        component: HashtagSpan
+    }
+]);
+
+export default  class extends React.Component {
+    constructor() {
+        super();
+        this.state = {
+            editorState: EditorState.createEmpty(compositeDecorator),
+        };
+        // ...
+    }
+    render() {
+        return (
+            <div style={styles.root}>
+                <div style={styles.editor} onClick={this.focus}>
+                    <Editor
+                        editorState={this.state.editorState}
+                        onChange={this.onChange}
+                    />
+                </div>
+            </div>
+        );
+    }
+}
+```
+
+[在线示例](https://marxjiao.com/draft-demo/#/tweet)
+
+[示例源码](https://github.com/MarxJiao/draft-demo/blob/master/src/components/Tweet/index.js)
+
+# Entity
+
+对于一些特殊情况，我们需要在文本上附加一些额外的信息，比如超链接中，超链接的文字和对应的链接地址是不一样的，我们就需要对超链接文字附加上链接地址信息。这个时候就需要`entity`来实现了。
+
+`contentState.createEntity`可以新建entity。
+
+```javascript
+const contentState = editorState.getCurrentContent();
+const contentStateWithEntity = contentState.createEntity(
+    'LINK',
+    'MUTABLE',
+    {url: 'http://www.zombo.com'}
+);
+
+// 要把entity和内容对应上，我们需要知道entity的key值
+const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+```
+`contentState.createEntity`接收三个参数：
+* `type`: 指示了entity的类型，例如：'LINK'、'MENTION'、'PHOTO'等。
+* `mutability`: 可变性。不要将不可变性和immutable.js混淆，此属性表示在编辑器中编辑文本范围时，使用此Enity对象对应的一系列文本的行为。 这在下面更详细地讨论。
+* `data`: 一个包含了一些对于当前enity可选数据的对象。例如，'LINK' enity包含了该链接的href值的数据对象。
+
+## mutability
+
+### IMMUTABLE
+
+如果不移除文本上的entity，文本不能被改变。当文本改变时，entity自动移除，当删除字符的时候整个entity连同上边携带的文字也会被删除。
+
+### MUTABLE
+
+如果设置Mutability为MUTABLE，被加了enity的文字可以随意编辑。比如超链接的文字是可以随意编辑的，一般超链接的文字和链接的指向是没有关系的。
+
+### SEGMENTED
+
+设置为「SEGMENTED」的entity和设置为「IMMUTABLE」很类似，但是删除行为有些不同，比如一段带有entity的英文文本(因为英文单词间都有空格)，按删除键，只会删除当前光标所在的单词，不会把当前entity对应的文本都删除掉。
+
+[这里](https://codepen.io/Kiwka/embed/wgpOoZ?height=265&theme-id=0&slug-hash=wgpOoZ&default-tab=js%2Cresult&user=Kiwka&embed-version=2&pen-title=Entity%20Editor%20-%20Draft.js%20example)可以直观体会三种entity的区别。
+
+我们使用`RichUtils.toggleLink`来管理entity和内容。
+
+```javascript
+toggleLink(
+    editorState: EditorState,
+    targetSelection: SelectionState,
+    entityKey: string
+): EditorState
+```
+
+下面通过一个能够编辑超链接的编辑器来了解entity的使用。
+
+首先我们新建一个Link组件来渲染超链接。
+
+```javascript
+const Link = (props) => {
+    // 这里通过contentState来获取entity，之后通过getData获取entity中包含的数据
+    const {url} = props.contentState.getEntity(props.entityKey).getData();
+    return (
+        <a href={url}>
+            {props.children}
+        </a>
+    );
+};
+```
+
+新建decorator，这里面`contentBlock.findEntityRanges`接收2个函数作为参数，如果第一个参数的函数执行时返回true，就会执行第二个参数函数，同时会将匹配的字符的起始位置和结束位置传递给第二个参数。
+
+```javascript
+const decorator = new CompositeDecorator([
+    {
+        strategy: function (contentBlock, callback, contentState) {
+
+            // 这个方法接收2个函数作为参数，如果第一个参数的函数执行时返回true，就会执行第二个参数函数，同时会将匹配的字符的起始位置和结束位置传递给第二个参数。
+            contentBlock.findEntityRanges(
+                (character) => {
+                    const entityKey = character.getEntity();
+                    return (
+                        entityKey !== null &&
+                        contentState.getEntity(entityKey).getType() === 'LINK'
+                    );
+                },
+                function () {
+                    callback(...arguments);
+                }
+                
+            );
+        },
+        component: Link
+    }
+]);
+```
+
+下面来新建编辑器组件
+
+```javascript
+class LinkEditor extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            // 新建editor时加入上边建的decorator
+            editorState: EditorState.createEmpty(decorator),
+            url: ''
+        };
+        this.onChange = editorState => {
+            this.setState({editorState});
+        };
+        this.addLink = this.addLink.bind(this);
+        this.urlChange = this.urlChange.bind(this);
+    }
+
+    /**
+     * 添加链接
+     */
+    addLink() {
+        const {editorState, url} = this.state;
+        // 获取contentState
+        const contentState = editorState.getCurrentContent();
+        // 在contentState上新建entity
+        const contentStateWithEntity = contentState.createEntity(
+            'LINK',
+            'MUTABLE',
+            {url}
+        );
+        // 获取到刚才新建的entity
+        const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+        // 把带有entity的contentState设置到editorState上
+        const newEditorState = EditorState.set(editorState, { currentContent: contentStateWithEntity });
+        // 把entity和选中的内容对应
+        this.setState({
+            editorState: RichUtils.toggleLink(
+                newEditorState,
+                newEditorState.getSelection(),
+                entityKey
+            ),
+            url: '',
+            }, () => {
+            setTimeout(() => this.refs.editor.focus(), 0);
+        });
+    }
+
+    /**
+     * 链接改变
+     *
+     * @param {Object} event 事件
+     */
+    urlChange(event) {
+        const target = event.target;
+        this.setState({
+            url: target.value
+        });
+    }
+
+    render() {
+        return (
+            <div>
+                链接编辑器
+                <div className="tools">
+                    <Input value={this.state.url} onChange={this.urlChange}></Input>
+                    <Button className="addlink" onClick={this.addLink}>addLink</Button>
+                </div>
+                <div className="editor">
+                    <Editor
+                        editorState={this.state.editorState}
+                        onChange={this.onChange}
+                        ref="editor"/>
+                </div>
+            </div>
+        )
+    }
+}
+
+```
+
+[在线示例](https://marxjiao.com/draft-demo/#/linkEditor)
+
+[示例代码](https://github.com/MarxJiao/draft-demo/blob/master/src/components/LinkEditor/index.js)
+
+# 总结
+
+draft.js提供了很多丰富的功能，还有自定义块级组件渲染，快捷键等功能本文没有提及。在使用过程中，感觉主要难点在decorator和entity的理解上。希望本文能够对你使用draft.js有所帮助。
+
+开发了一些简单的demo供参考：https://marxjiao.com/draft-demo/
+
+demo源码：https://github.com/MarxJiao/draft-demo
+
+# 相关链接
+
+[Draft.js官方文档](https://draftjs.org/docs/overview.html#content)
+
+[Draft.js 在知乎的实践](https://zhuanlan.zhihu.com/p/24951621)
