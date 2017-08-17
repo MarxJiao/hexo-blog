@@ -234,6 +234,57 @@ function getBlockStyle(block) {
 
 我们可以使用`editorState.getCurrentContent()`获取`contentState`对象，`contentState.getBlockForKey(blockKey)`可以获取到`blockKey`对应的`contentBlock`。`contentBlock.getType()`可以获取到当前contentBlock对应的类型。
 
+# 自定义组件渲染
+
+除了上定义的contentBlock类型对应的标签之外，Draft.js还提供了自定义组件渲染功能。实现起来非常简单。自定义一个渲染函数，之后把这个函数传个Editor组件`blockRendererFn`这个prop就行。
+
+先自定义渲染函数和组件：
+
+```javascript
+
+const ImgComponent = (props) => {
+    return (
+        <img
+            style={{height: '300px', width: 'auto'}}
+            src={props.blockProps.src}
+            alt="图片"/>
+    )
+}
+
+function myBlockRenderer(contentBlock) {
+    
+    // 获取到contentBlock的文本信息，可以用contentBlock提供的其它方法获取到想要使用的信息
+    const text = contentBlock.getText();
+
+    // 我们假定这里图片的文本格式为![图片名称](htt://....)
+    let matches = text.match(/\!\[(.*)\]\((http.*)\)/);
+    if (matches) {
+        return {
+            component: ImgComponent,  // 指定组件
+            editable: false,  // 这里设置自定义的组件可不可以编辑，因为是图片，这里选择不可编辑
+            // 这里的props在自定义的组件中需要用this.props.blockProps来访问
+            props: {
+                src: matches[2],,
+            }
+        };
+    }
+}
+```
+
+之后只要在`Editor`上加`blockRendererFn`:
+
+```html
+<Editor
+    editorState={this.state.editorState}
+    onChange={this.onChange}
+    blockRendererFn={myBlockRenderer}/>
+```
+
+[在线示例](https://marxjiao.com/draft-demo/#/BlockRender)
+
+[示例代码](https://github.com/MarxJiao/draft-demo/blob/master/src/components/BlockRender/index.js)
+
+
 # Decorator
 
 除了使用自定义样式外，我们也可以使用自定义组件来渲染特定的内容。为了支持自定义富文本的灵活性，Draft.js提供了一个`decrator`系统。Decorator基于扫描给定`ContentBlock`的内容，找到满足与定义的策略匹配的文本范围，然后使用指定的React组件呈现它们。
@@ -305,6 +356,7 @@ export default  class extends React.Component {
 [在线示例](https://marxjiao.com/draft-demo/#/tweet)
 
 [示例源码](https://github.com/MarxJiao/draft-demo/blob/master/src/components/Tweet/index.js)
+
 
 # Entity
 
@@ -485,7 +537,7 @@ class LinkEditor extends Component {
 
 # 总结
 
-draft.js提供了很多丰富的功能，还有自定义块级组件渲染，快捷键等功能本文没有提及。在使用过程中，感觉主要难点在decorator和entity的理解上。希望本文能够对你使用draft.js有所帮助。
+draft.js提供了很多丰富的功能，还有自定义快捷键等功能本文没有提及。在使用过程中，感觉主要难点在decorator和entity的理解上。希望本文能够对你了解draft.js有所帮助。
 
 开发了一些简单的demo供参考：https://marxjiao.com/draft-demo/
 
