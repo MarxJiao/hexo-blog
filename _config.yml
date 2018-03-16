@@ -76,4 +76,5 @@ deploy:
   email: marxjiao@gmail.com
   extend_dirs: 
 
-disqus_shortname: marxjiao
+# 这个插件在墙外，影响页面加载速度
+# disqus_shortname: marxjiao

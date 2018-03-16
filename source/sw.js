@@ -2,7 +2,6 @@ self.addEventListener('install', function (e) {
     e.waitUntil(
         caches.open('marx').then(function (cache) {
             return cache.addAll([
-                '/',
                 '/css/fonts/fontawesome-webfont.woff?v=',
                 '/css/style.css',
                 '/js/script.js',
