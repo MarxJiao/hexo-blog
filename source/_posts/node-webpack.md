@@ -185,8 +185,8 @@ class WebpackConfig implements Configuration {
     resolve = {
         extensions: [".ts", ".js", ".json"],
     };
-    // 留空，为开发环境添加配置准备
-    plugins = [];
+    // 开发环境也使用NoEmitOnErrorsPlugin
+    plugins = [new webpack.NoEmitOnErrorsPlugin()];
     constructor(mode: Configuration['mode']) {
         // 配置mode，production情况下用上边的默认配置就ok了。
         this.mode = mode;
