@@ -37,20 +37,56 @@ tags: [webpack, node, typescript]
 
 ## 环境搭建
 
-一般情况下需要准备2套webpack配置，一套用来开发，一套用来发布。前面已经说过了使用webpack的api来打包为动态创建webpack配置提供了可能。所以这里我们写一个`WebpackConfig`类，创建实例时根据参数，生成不同环境的配置。
+我们先用Koa写一个简单的web server，之后针对这个server来搭建环境。
 
-### 开发环境和发布环境的区别
+### 项目代码
 
-首先两个环境的mode是是不同的，开发环境是`development`，发布环境是`production`。关于mode的更多信息可查看[webpack文档](https://webpack.js.org/concepts/mode/)。
+新建`server/app.ts`，这个文件主要用来创建一个koa app。
 
-开发环境需要热加载和启动服务，entry里需要配置'webpack/hot/signal'，使用`webpack-node-externals`将'webpack/hot/signal'打包到代码里，添加HotModuleReplacementPlugin，使用`start-server-webpack-plugin`启动服务和开启热加载。
+```typescript
+import * as Koa from 'koa';
 
-### 配置具体
+const app = new Koa();
+
+app.use(ctx => {
+    ctx.body = 'Hello World';
+});
+
+export default app;
+```
+
+我们需要另一个文件来启动server，并且监听`server/app.ts`的改变，来热加载项目。
+
+新建`server/server.ts`
+
+```typescript
+import * as http from 'http';
+import app from './app';
+
+// app.callback() 会返回一个能够通过http.createServer创建server的函数，类似express和connect。
+let currentApp = app.callback();
+// 创建server
+const server = http.createServer(currentApp);
+server.listen(3000);
+
+// 热加载
+if (module.hot) {
+    // 监听./app.ts
+    module.hot.accept('./app.ts', () => {
+        // 如果有改动，就使用新的app来处理请求
+        server.removeListener('request', currentApp);
+        currentApp = app.callback();
+        server.on('request', currentApp);
+    });
+}
+```
+
+### 编译配置
 
 在写webpack配置之前，我们先写下ts配置和babel配置。
 
 #### typescript配置
-这里写的是webpack编译代码用的配置，后面还会介绍ts-node跑脚本时使用的配置。我们新建`config/tsconfig.json`
+这里写的是webpack编译代码用的配置，后面还会介绍ts-node跑脚本时使用的配置。我们新建`config/tsconfig.json`：
 ```json
 {
     "compilerOptions": {
@@ -84,6 +120,16 @@ tags: [webpack, node, typescript]
 ```
 
 #### webpack配置
+
+一般情况下需要准备2套webpack配置，一套用来开发，一套用来发布。前面已经说过了使用webpack的api来打包为动态创建webpack配置提供了可能。所以这里我们写一个`WebpackConfig`类，创建实例时根据参数，生成不同环境的配置。
+
+##### 开发环境和发布环境的区别
+
+首先两个环境的mode是是不同的，开发环境是`development`，发布环境是`production`。关于mode的更多信息可查看[webpack文档](https://webpack.js.org/concepts/mode/)。
+
+开发环境需要热加载和启动服务，entry里需要配置'webpack/hot/signal'，使用`webpack-node-externals`将'webpack/hot/signal'打包到代码里，添加HotModuleReplacementPlugin，使用`start-server-webpack-plugin`启动服务和开启热加载。
+
+##### webpack配置内容
 
 现在我们来写下webpack配置。重点写在注释中了。
 
@@ -174,51 +220,159 @@ class WebpackConfig implements Configuration {
 export default WebpackConfig;
 ```
 
+### 编译脚本
 
+使用ts-node来启动脚本时需要使用新`tsconfig.json`，这个编译目标是在node中运行。
 
-
-### 公共配置
-
-不管是开发环境和发布环境，都需要的配置，各种loader，target，resolve。具体的配置的说明写在注释中了。
-
-webpack.server.base.conf.js
-
-```javascript
-// webpack.server.base.conf.js
-
-const webpack = require('webpack');
-
-module.exports = {
-    
-}
-
-```
-
-## typescript配置tsconfig.json
+在项目根目录新建`tsconfig.json`:
 
 ```json
 {
     "compilerOptions": {
+        // 为了node环境能直接运行
         "module": "commonjs",
         "noImplicitAny": true,
-        "removeComments": true,
-        "preserveConstEnums": true,
         "sourceMap": true,
         "moduleResolution": "node",
-        "target": "esnext",
+        "isolatedModules": true,
+        "target": "es5",
         "strictNullChecks": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
-        "inlineSources": true,
+        "inlineSources": false,
+        "lib": ["es2015"]
     },
     "exclude": [
         "node_modules",
         "**/*.spec.ts"
     ]
 }
+
 ```
-## 开发脚本 start-dev.ts
 
-使用ts-node执行 start-dev.ts来启动开发环境。start-dev.ts主要功能为，调用webpack的node api来执行编译。先用webpack(webpack-config)来生成一个compiler，使用compiler.watch(option, callback)来启动编译器，并监听文件变动。
+#### 开发脚本
 
-## 发布打包脚本 build.ts
+启动开发脚本，`scripts/start-dev.ts`:
+
+```typescript
+import * as webpack from 'webpack';
+
+import WebpackConfig from '../config/Webpack.config';
+
+// 创建编译时配置
+const devConfig = new WebpackConfig('development');
+// 通过watch来实时编译
+webpack(devConfig).watch({
+    aggregateTimeout: 300
+}, (err: Error) => {
+    console.log(err);
+});
+
+```
+
+在`package.json`中添加
+
+```json
+"scripts": {
+    "dev": "rm -rf ./dist && ts-node ./scripts/start-dev.ts"
+},
+```
+
+执行`yarn dev`，我们能看到项目启动了:
+命令行输出：
+![命令行输出](./start-output.png)
+浏览器展示：
+![浏览器展示](./started-view.png)
+
+修改`server/app.ts`
+
+```diff
+
+import * as Koa from 'koa';
+
+const app = new Koa();
+
+app.use(ctx => {
+-   ctx.body = 'Hello World';
++   ctx.body = 'Hello Marx';
+});
+
+export default app;
+
+```
+
+能看到命令行输出:
+![更新代码后命令行输出](./updated-output.png)
+
+刷新浏览器：
+![浏览器展示](./updated-view.png)
+
+可以看到热更新已经生效了。
+
+#### 发布打包脚本
+
+新建打包脚本`scripts/build.ts`：
+
+```typescript
+import * as webpack from 'webpack';
+
+import WebpackConfig from '../config/Webpack.config';
+
+const buildConfig = new WebpackConfig('production');
+
+webpack(buildConfig).run((err: Error) => {
+    console.log(err);
+});
+
+```
+
+在`package.json`添加`build`命令：
+```diff
+"scripts": {
++   "build": "rm -rf ./dist && ts-node ./scripts/build.ts",
+    "dev": "rm -rf ./dist && ts-node ./scripts/start-dev.ts"
+},
+```
+
+执行`yarn build`就能看到`dist/server.js`。这个就是我们项目的产出。其中包含了`node_modules`中的依赖，这样做是否合理，还在探索中，欢迎讨论。
+
+到此整个环境搭建过程就完成了。
+
+完整项目代码[MarxJiao/webpack-node](https://github.com/MarxJiao/webpack-node)
+## 总结
+
+这个项目重点在于热加载和All In Typescript。
+
+### 1. 为什么后端代码要热加载？
+
+为了方便使用webpack中间件打包前端代码，这样不用重启后端服务就不用重新编译前端代码，重新编译是很耗时的。后续使用时，流程大概是这样的
+
+> start-dev.ts -> server端的webpack -> server代码 -> webpack中间件 -> 前端代码
+
+这样能保证开发时只需要一个入口来启动，前后端都能热加载。
+
+### 2. 实现热加载的关键点
+
+* webpack配置`mode: 'development'`，为了`NamedModulesPlugin`插件
+* webpack配置entry: 'webpack/hot/signal'
+* 将'webpack/hot/signal'打包进代码：nodeExternals({whitelist: ['webpack/hot/signal']})
+* 使用`HotModuleReplacementPlugin`
+* start-server-webpack-plugin配置`signal: true`
+* babel配置`"modules": false`
+* tsconfig.json配置`"module": "es2015"`
+* 使用单独的文件来启动server，监听热加载的文件，`server/server.ts`
+
+### 3. tsconfig
+
+ts-node运行脚本的tsconfig和ts-loader打包代码时的tsconfig不同。
+
+ts-node用的config直接将代码用tsc编译后在node运行，在node 8.x以下的版本中不能使用import，所以module要用`commonjs`。
+
+webpack打包的代码要热加载，需要用es module，这里我们使用`es2015`。
+
+## 参考资料
+* [Hot reload all the things!](https://hackernoon.com/hot-reload-all-the-things-ec0fed8ab0)
+* [How to HMR on server side?](https://github.com/webpack/docs/issues/45)
+* [Node.js Web应用代码热更新的另类思路](http://fex.baidu.com/blog/2015/05/nodejs-hot-swapping/)
+* [Don’t use nodemon, there are better ways!](https://codeburst.io/dont-use-nodemon-there-are-better-ways-fc016b50b45e)
+* [Webpack 做 Node.js 代码热替换, 第一步](https://segmentfault.com/a/1190000003888845)
