@@ -83,7 +83,7 @@ if (module.hot) {
 
 ### 编译配置
 
-在写webpack配置之前，我们先写下ts配置和babel配置。
+在写webpack配置之前，我们先写下ts配置。
 
 #### typescript配置
 这里写的是webpack编译代码用的配置，后面还会介绍ts-node跑脚本时使用的配置。我们新建`config/tsconfig.json`：
@@ -110,14 +110,6 @@ if (module.hot) {
 }
 ```
 
-#### babel配置
-
-.babelrc，`"modules": false`很重要，`tree shaking`、`HMR`都靠它。
-```json
-{
-  "presets": [["env", {"modules": false}]]
-}
-```
 
 #### webpack配置
 
@@ -161,8 +153,6 @@ class WebpackConfig implements Configuration {
             {
                 test: /\.tsx?$/,
                 use: [
-                    // tsc编译后，再用babel处理
-                    {loader: 'babel-loader',},
                     {
                         loader: 'ts-loader',
                         options: {
@@ -173,11 +163,6 @@ class WebpackConfig implements Configuration {
                         }
                     }
                 ],
-                exclude: /node_modules/
-            },
-            {
-                test: /\.jsx?$/,
-                use: 'babel-loader',
                 exclude: /node_modules/
             }
         ]
@@ -358,7 +343,6 @@ webpack(buildConfig).run((err: Error) => {
 * 将'webpack/hot/signal'打包进代码：nodeExternals({whitelist: ['webpack/hot/signal']})
 * 使用`HotModuleReplacementPlugin`
 * start-server-webpack-plugin配置`signal: true`
-* babel配置`"modules": false`
 * tsconfig.json配置`"module": "es2015"`
 * 使用单独的文件来启动server，监听热加载的文件，`server/server.ts`
 
