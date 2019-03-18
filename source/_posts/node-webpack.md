@@ -205,6 +205,13 @@ class WebpackConfig implements Configuration {
 export default WebpackConfig;
 ```
 
+> 这里需要注意，Windows 系统不支持 `webpack/hot/signal`。需要使用 `webpack/hot/poll`。
+> 
+> 具体配置区别参见 [commit](
+https://github.com/MarxJiao/webpack-node/commit/0cda390823172088db4c4d194f2445bd0d23243a)
+>
+> Windows 下的配置： [webpack.config.ts](https://github.com/MarxJiao/webpack-node/blob/poll/config/Webpack.config.ts) 
+
 ### 编译脚本
 
 使用ts-node来启动脚本时需要使用新`tsconfig.json`，这个编译目标是在node中运行。
