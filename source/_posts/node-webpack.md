@@ -346,10 +346,10 @@ webpack(buildConfig).run((err: Error) => {
 ### 2. 实现热加载的关键点
 
 * webpack配置`mode: 'development'`，为了`NamedModulesPlugin`插件
-* webpack配置entry: 'webpack/hot/signal'
-* 将'webpack/hot/signal'打包进代码：nodeExternals({whitelist: ['webpack/hot/signal']})
+* webpack配置entry: 'webpack/hot/signal' 或 'webpack/hot/poll?1000'
+* 将'webpack/hot/signal'打包进代码：nodeExternals({whitelist: ['webpack/hot/signal']}) 或 'webpack/hot/poll?1000'
 * 使用`HotModuleReplacementPlugin`
-* start-server-webpack-plugin配置`signal: true`
+* start-server-webpack-plugin配置`signal: true`，'webpack/hot/poll?1000' 时配置为 false
 * tsconfig.json配置`"module": "es2015"`
 * 使用单独的文件来启动server，监听热加载的文件，`server/server.ts`
 
