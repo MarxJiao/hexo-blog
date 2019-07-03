@@ -1,8 +1,8 @@
 # Header
 menu:
-  首页: /
-  全部文章: /archives
-  项目: /projects
+  Home: /
+  Archives: /archives
+  Projects: /projects
 # rss: /atom.xml
 
 # Content
