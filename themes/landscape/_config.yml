@@ -3,6 +3,8 @@ menu:
   Home: /
   Archives: /archives
   Projects: /projects
+  Links: /links
+
 # rss: /atom.xml
 
 # Content
@@ -35,3 +37,8 @@ twitter:
 google_plus:
 fb_admins:
 fb_app_id:
+
+deploy:
+  type: git
+  repo: https://github.com/MarxJiao/marxjiao.github.io
+  branch: master

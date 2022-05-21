@@ -1,5 +1,5 @@
 ---
-title: projects
+title: Projects
 date: 2017-09-15 18:11:20
 ---
 
