@@ -28,4 +28,9 @@ jobs:
         cache: 'npm'
     - run: npm install
     - run: npm run build
-    - run: npm run deploy
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+        external_repository: MarxJiao/marxjiao.github.io
+        publish_branch: master  # default: gh-pages
+        publish_dir: ./public
